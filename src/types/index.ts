@@ -48,6 +48,7 @@ export interface Product {
   returnPolicy?: string;
   tags?: string[];
   weight?: number;
+    qrCode?: string;
   dimensions?: {
     width: number;
     height: number;
