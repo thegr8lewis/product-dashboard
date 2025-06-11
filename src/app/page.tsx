@@ -5,37 +5,37 @@
 // import { Layout } from '@/components/layout/Layout';
 // import { ProductGrid } from '@/components/products/ProductGrid';
 // import { SearchBar } from '@/components/products/SearchBar';
+// import { CategoryFilter } from '@/components/products/CategoryFilter';
 // import { useProducts } from '@/hooks/useProducts';
 // import { Spinner } from '@/components/ui/Spinner';
 // import { ErrorMessage } from '@/components/ui/ErrorMessage';
 
 // export default function HomePage() {
 //   const [searchQuery, setSearchQuery] = useState('');
+//   const [selectedCategory, setSelectedCategory] = useState('');
 
 //   // Fetch products
 //   const { data: productsData, isLoading: productsLoading, error: productsError } = useProducts();
 
-//   // Debug: Log fetched products
-//   useEffect(() => {
-//     if (productsData?.products) {
-//       console.log(
-//         'Fetched products:',
-//         productsData.products.map((p) => ({
-//           id: p.id,
-//           title: p.title,
-//           description: p.description,
-//           brand: p.brand,
-//           category: p.category,
-//         }))
-//       );
-//     }
-//   }, [productsData]);
+//   // Extract unique categories
+//   const categories = useMemo(() => {
+//     if (!productsData?.products) return [];
+//     return [...new Set(productsData.products.map((p) => p.category))].map((category) => ({
+//       id: category,
+//       name: category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' '),
+//     }));
+//   }, [productsData?.products]);
 
-//   // Filter products based on search query
+//   // Filter products based on search query and category
 //   const filteredProducts = useMemo(() => {
 //     if (!productsData?.products) return [];
 
 //     let filtered = productsData.products;
+
+//     // Filter by category
+//     if (selectedCategory) {
+//       filtered = filtered.filter((product) => product.category === selectedCategory);
+//     }
 
 //     // Filter by search query
 //     if (searchQuery.trim()) {
@@ -56,10 +56,14 @@
 //     }
 
 //     return filtered;
-//   }, [productsData?.products, searchQuery]);
+//   }, [productsData?.products, searchQuery, selectedCategory]);
 
 //   const handleSearch = (query: string) => {
 //     setSearchQuery(query);
+//   };
+
+//   const handleCategoryChange = (category: string) => {
+//     setSelectedCategory(category);
 //   };
 
 //   // Handle error state
@@ -82,21 +86,20 @@
 //   if (productsLoading) {
 //     return (
 //       <Layout>
-//         <div className="space-y-8">
+//         <div className="space-y-8 ">
 //           {/* Header Section */}
 //           <div className="text-center">
-//             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+//             <h2 className="text-3xl font-bold text-foreground mb-4 pt-20">
 //               Discover Amazing Products
 //             </h2>
-//             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-//               Browse through our extensive collection of products. Use the search and filters below
-//               to find exactly what you're looking for.
-//             </p>
 //           </div>
-//           {/* Placeholder for search */}
+//           {/* Placeholder for search and filter */}
 //           <div className="flex flex-col sm:flex-row gap-4 items-center">
 //             <div className="flex-1 w-full">
-//               <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+//               <div className="h-10 bg-muted rounded animate-pulse" />
+//             </div>
+//             <div className="w-full sm:w-48">
+//               <div className="h-10 bg-muted rounded animate-pulse" />
 //             </div>
 //           </div>
 //           <div className="flex justify-center items-center h-64">
@@ -112,21 +115,26 @@
 //       <div className="space-y-8">
 //         {/* Header Section */}
 //         <div className="text-center">
-//           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+//           <h2 className="text-3xl font-bold text-foreground mb-4 pt-20">
 //             Discover Amazing Products
 //           </h2>
-//           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-//             Browse through our extensive collection of products. Use the search and filters below
-//             to find exactly what you're looking for.
-//           </p>
+
 //         </div>
 
-//         {/* Search Section */}
+//         {/* Search and Filter Section */}
 //         <div className="flex flex-col sm:flex-row gap-4 items-center">
 //           <div className="flex-1 w-full">
 //             <SearchBar
 //               onSearch={handleSearch}
-//               placeholder="Search by product name, brand, or description..."
+//               placeholder="Search by product name..."
+//             />
+//           </div>
+//           <div className="w-full sm:w-48">
+//             <CategoryFilter
+//               categories={categories}
+//               selectedCategory={selectedCategory}
+//               onCategoryChange={handleCategoryChange}
+//               isLoading={productsLoading}
 //             />
 //           </div>
 //         </div>
@@ -154,40 +162,41 @@ import { useState, useMemo, useEffect } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { SearchBar } from '@/components/products/SearchBar';
+import { CategoryFilter } from '@/components/products/CategoryFilter';
 import { useProducts } from '@/hooks/useProducts';
 import { Spinner } from '@/components/ui/Spinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
-
+import { Search, Filter } from 'lucide-react';
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   // Fetch products
   const { data: productsData, isLoading: productsLoading, error: productsError } = useProducts();
 
-  // Debug: Log fetched products
-  useEffect(() => {
-    if (productsData?.products) {
-      console.log(
-        'Fetched products:',
-        productsData.products.map((p) => ({
-          id: p.id,
-          title: p.title,
-          description: p.description,
-          brand: p.brand,
-          category: p.category,
-        }))
-      );
-    }
-  }, [productsData]);
+  // Extract unique categories
+  const categories = useMemo(() => {
+    if (!productsData?.products) return [];
+    return [...new Set(productsData.products.map((p) => p.category))].map((category) => ({
+      id: category,
+      name: category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' '),
+    }));
+  }, [productsData?.products]);
 
-  // Filter products based on search query
+  // Filter products based on search query and category
   const filteredProducts = useMemo(() => {
     if (!productsData?.products) return [];
 
     let filtered = productsData.products;
 
-    // Filter by search query
+    if (selectedCategory) {
+      filtered = filtered.filter((product) => product.category === selectedCategory);
+    }
+
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((product) => {
@@ -206,10 +215,48 @@ export default function HomePage() {
     }
 
     return filtered;
-  }, [productsData?.products, searchQuery]);
+  }, [productsData?.products, searchQuery, selectedCategory]);
+
+  // Handle filtering animation separately
+  useEffect(() => {
+    if (searchQuery || selectedCategory) {
+      setIsFiltering(true);
+      const timer = setTimeout(() => {
+        setIsFiltering(false);
+      }, 300);
+
+      return () => clearTimeout(timer);
+    } else {
+      setIsFiltering(false);
+    }
+  }, [searchQuery, selectedCategory]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('isSearchOpen changed:', isSearchOpen);
+  }, [isSearchOpen]);
 
   const handleSearch = (query: string) => {
+    console.log('handleSearch called with:', query);
     setSearchQuery(query);
+    // Don't close the search bar immediately - let user continue searching
+    // setIsSearchOpen(false);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setIsFilterOpen(false);
+  };
+
+  const toggleSearch = () => {
+    console.log('Search toggle clicked, current state:', isSearchOpen); // Debug log
+    setIsSearchOpen((prev) => !prev);
+    if (isFilterOpen) setIsFilterOpen(false); // Close filter if open
+  };
+
+  const toggleFilter = () => {
+    setIsFilterOpen((prev) => !prev);
+    if (isSearchOpen) setIsSearchOpen(false); // Close search if open
   };
 
   // Handle error state
@@ -231,22 +278,18 @@ export default function HomePage() {
   // Handle loading state
   if (productsLoading) {
     return (
-    
       <Layout>
         <div className="space-y-8">
-          {/* Header Section */}
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-4">
+            <h2 className="text-3xl font-bold text-foreground mb-4 pt-20">
               Discover Amazing Products
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Browse through our extensive collection of products. Use the search and filters below
-              to find exactly what you're looking for.
-            </p>
           </div>
-          {/* Placeholder for search */}
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <div className="flex-1 w-full">
+              <div className="h-10 bg-muted rounded animate-pulse" />
+            </div>
+            <div className="w-full sm:w-48">
               <div className="h-10 bg-muted rounded animate-pulse" />
             </div>
           </div>
@@ -255,48 +298,109 @@ export default function HomePage() {
           </div>
         </div>
       </Layout>
-     
     );
   }
 
   return (
-   
     <Layout>
       <div className="space-y-8">
-        {/* Header Section */}
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-4">
+          <h2 className="text-3xl font-bold text-foreground mb-4 pt-20">
             Discover Amazing Products
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Browse through our extensive collection of products. Use the search and filters below
-            to find exactly what you're looking for.
-          </p>
         </div>
 
-        {/* Search Section */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center">
-          <div className="flex-1 w-full">
-            <SearchBar
-              onSearch={handleSearch}
-              placeholder="Search by product name, brand, or description..."
-            />
+        <div className="space-y-4">
+          {/* Mobile View (hidden on md and above) */}
+          <div className="flex w-full md:hidden gap-4">
+            <button
+              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-muted rounded hover:bg-muted/80 transition-colors"
+              onClick={toggleSearch}
+              aria-label="Toggle search bar"
+              type="button"
+            >
+              <Search size={20} />
+              <span>Search</span>
+            </button>
+            <button
+              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-muted rounded hover:bg-muted/80 transition-colors"
+              onClick={toggleFilter}
+              aria-label="Toggle category filter"
+              type="button"
+            >
+              <Filter size={20} />
+              <span>Category</span>
+            </button>
+          </div>
+
+          {/* Search Bar for Mobile - appears below buttons */}
+          {isSearchOpen && (
+            <div className="w-full md:hidden">
+              <SearchBar
+                onSearch={handleSearch}
+                placeholder="Search by product name..."
+              />
+            </div>
+          )}
+
+          {/* Category Filter Dropdown for Mobile - appears below buttons */}
+          {isFilterOpen && (
+            <div className="w-full md:hidden">
+              <CategoryFilter
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={handleCategoryChange}
+                isLoading={productsLoading}
+              />
+            </div>
+          )}
+
+          {/* Desktop View (hidden on mobile) */}
+          <div className="hidden md:flex gap-4 items-center">
+            <div className="flex-1">
+              <SearchBar
+                onSearch={handleSearch}
+                placeholder="Search by product name..."
+              />
+            </div>
+            <div className="w-48">
+              <CategoryFilter
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={handleCategoryChange}
+                isLoading={productsLoading}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Products Grid */}
-        <ProductGrid
-          products={filteredProducts}
-          isLoading={productsLoading}
-          error={
-            typeof productsError === 'object' && productsError && 'message' in productsError
-              ? (productsError as { message: string }).message
-              : undefined
-          }
-          onRetry={() => window.location.reload()}
-        />
+        {/* Products Grid with Skeleton during Filtering */}
+        {isFiltering ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="bg-muted rounded-lg animate-pulse">
+                <div className="h-48 w-full bg-gray-200" />
+                <div className="p-4 space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                  <div className="h-4 bg-gray-200 rounded w-1/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ProductGrid
+            products={filteredProducts}
+            isLoading={productsLoading}
+            error={
+              typeof productsError === 'object' && productsError && 'message' in productsError
+                ? (productsError as { message: string }).message
+                : undefined
+            }
+            onRetry={() => window.location.reload()}
+          />
+        )}
       </div>
     </Layout>
-  
   );
 }

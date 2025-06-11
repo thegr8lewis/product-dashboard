@@ -11,7 +11,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { Layout } from '@/components/layout/Layout';
 import { Star, ArrowLeft, ChevronLeft, ChevronRight, Info, Shield, Truck, Package, RotateCw, Tag } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProductDetailsPage() {
   const router = useRouter();
@@ -63,54 +63,71 @@ export default function ProductDetailsPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="container mx-auto px-4 py-8"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-15"
       >
-        <button
+        <motion.button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-blue-500 hover:text-blue-700 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+          whileHover={{ x: -4 }}
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-8 transition-colors"
           aria-label="Back to products"
         >
           <ArrowLeft size={20} />
-          Back to Products
-        </button>
+          
+        </motion.button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Image Gallery */}
-          <div className="relative w-full h-96 md:h-[500px]">
-            <Image
-              src={images[currentImageIndex]}
-              alt={`${product.title} - Image ${currentImageIndex + 1}`}
-              fill
-              className="object-contain rounded-lg"
-              priority
-            />
+          <div className="relative w-full aspect-square rounded-xl bg-gray-50 dark:bg-gray-800 overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentImageIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src={images[currentImageIndex]}
+                  alt={`${product.title} - Image ${currentImageIndex + 1}`}
+                  fill
+                  className="object-contain p-4"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </motion.div>
+            </AnimatePresence>
+            
             {images.length > 1 && (
               <>
-                <div className="absolute inset-y-0 left-0 flex items-center">
-                  <button
+                <div className="absolute inset-y-0 left-0 flex items-center pl-2">
+                  <motion.button
                     onClick={prevImage}
-                    className="bg-black/50 text-white p-2 rounded-full hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white"
+                    whileTap={{ scale: 0.9 }}
+                    className="bg-white/80 text-gray-800 p-2 rounded-full shadow-md hover:bg-white focus:outline-none backdrop-blur-sm"
                     aria-label="Previous image"
                   >
                     <ChevronLeft size={24} />
-                  </button>
+                  </motion.button>
                 </div>
-                <div className="absolute inset-y-0 right-0 flex items-center">
-                  <button
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+                  <motion.button
                     onClick={nextImage}
-                    className="bg-black/50 text-white p-2 rounded-full hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white"
+                    whileTap={{ scale: 0.9 }}
+                    className="bg-white/80 text-gray-800 p-2 rounded-full shadow-md hover:bg-white focus:outline-none backdrop-blur-sm"
                     aria-label="Next image"
                   >
                     <ChevronRight size={24} />
-                  </button>
+                  </motion.button>
                 </div>
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
                   {images.map((_, index) => (
-                    <button
+                    <motion.button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`h-2 w-2 rounded-full ${
-                        index === currentImageIndex ? 'bg-white' : 'bg-gray-400'
+                      whileHover={{ scale: 1.2 }}
+                      className={`h-2 w-2 rounded-full transition-colors ${
+                        index === currentImageIndex ? 'bg-blue-600' : 'bg-gray-300'
                       }`}
                       aria-label={`Go to image ${index + 1}`}
                     />
@@ -123,42 +140,45 @@ export default function ProductDetailsPage() {
           {/* Product Details */}
           <div className="flex flex-col gap-6">
             <div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                SKU: {product.sku || 'N/A'}
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                {product.brand}
               </span>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mt-1">
                 {product.title}
               </h1>
-              <div className="flex items-center gap-4 mt-2">
-                <div className="flex items-center gap-2" aria-label={`Rating: ${product.rating.toFixed(1)} out of 5`}>
+              <div className="flex items-center gap-4 mt-3">
+                <div 
+                  className="flex items-center gap-1.5" 
+                  aria-label={`Rating: ${product.rating.toFixed(1)} out of 5`}
+                >
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       className={`h-5 w-5 ${
                         i < Math.round(product.rating)
                           ? 'text-yellow-400 fill-current'
-                          : 'text-gray-300'
+                          : 'text-gray-300 dark:text-gray-600'
                       }`}
                       aria-hidden="true"
                     />
                   ))}
-                  <span className="text-gray-600 dark:text-gray-300">
-                    ({product.rating.toFixed(1)})
+                  <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">
+                    {product.rating.toFixed(1)}
                   </span>
                 </div>
-                <span className={`text-sm px-2 py-1 rounded ${
+                <span className={`text-xs font-medium px-2 py-1 rounded-full ${
                   product.availabilityStatus === 'In Stock' 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
                 }`}>
                   {product.availabilityStatus}
                 </span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               <div className="flex items-center gap-4">
-                <p className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white">
+                <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                   ${discountedPrice.toFixed(2)}
                 </p>
                 {product.discountPercentage > 0 && (
@@ -166,58 +186,78 @@ export default function ProductDetailsPage() {
                     <span className="text-lg text-gray-500 line-through dark:text-gray-400">
                       ${product.price.toFixed(2)}
                     </span>
-                    <span className="text-sm bg-red-100 text-red-800 px-2 py-1 rounded dark:bg-red-900 dark:text-red-200">
-                      Save {product.discountPercentage}%
+                    <span className="text-xs font-bold bg-red-100 text-red-800 px-2 py-1 rounded-full dark:bg-red-900/30 dark:text-red-400">
+                      {product.discountPercentage}% OFF
                     </span>
                   </div>
                 )}
               </div>
-              <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                 {product.description}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="flex items-start gap-2">
-                <Info className="h-5 w-5 text-gray-500 mt-0.5" />
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <Info className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                </div>
                 <div>
                   <span className="font-semibold text-gray-900 dark:text-white">Brand:</span>{' '}
-                  {product.brand || 'N/A'}
+                  <span className="text-gray-600 dark:text-gray-300">{product.brand || 'N/A'}</span>
                 </div>
               </div>
-              <div className="flex items-start gap-2">
-                <Tag className="h-5 w-5 text-gray-500 mt-0.5" />
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <Tag className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                </div>
                 <div>
                   <span className="font-semibold text-gray-900 dark:text-white">Category:</span>{' '}
-                  {product.category || 'N/A'}
+                  <span className="text-gray-600 dark:text-gray-300">{product.category || 'N/A'}</span>
                 </div>
               </div>
-              <div className="flex items-start gap-2">
-                <Package className="h-5 w-5 text-gray-500 mt-0.5" />
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <Package className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                </div>
                 <div>
                   <span className="font-semibold text-gray-900 dark:text-white">Stock:</span>{' '}
-                  {product.stock > 0 ? `${product.stock} available` : 'Out of stock'}
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {product.stock > 0 ? `${product.stock} available` : 'Out of stock'}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-start gap-2">
-                <Shield className="h-5 w-5 text-gray-500 mt-0.5" />
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <Shield className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                </div>
                 <div>
                   <span className="font-semibold text-gray-900 dark:text-white">Warranty:</span>{' '}
-                  {product.warrantyInformation || 'No warranty'}
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {product.warrantyInformation || 'No warranty'}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-start gap-2">
-                <Truck className="h-5 w-5 text-gray-500 mt-0.5" />
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <Truck className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                </div>
                 <div>
                   <span className="font-semibold text-gray-900 dark:text-white">Shipping:</span>{' '}
-                  {product.shippingInformation || 'Shipping information not available'}
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {product.shippingInformation || 'Shipping information not available'}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-start gap-2">
-                <RotateCw className="h-5 w-5 text-gray-500 mt-0.5" />
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-800">
+                  <RotateCw className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                </div>
                 <div>
                   <span className="font-semibold text-gray-900 dark:text-white">Returns:</span>{' '}
-                  {product.returnPolicy || 'No return policy'}
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {product.returnPolicy || 'No return policy'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -225,50 +265,65 @@ export default function ProductDetailsPage() {
             {product.tags && product.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {product.tags.map((tag) => (
-                  <span 
-                    key={tag} 
-                    className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded dark:bg-gray-700 dark:text-gray-200"
+                  <motion.span 
+                    key={tag}
+                    whileHover={{ y: -2 }}
+                    className="text-xs font-medium bg-gray-100 text-gray-800 px-3 py-1.5 rounded-full dark:bg-gray-800 dark:text-gray-200"
                   >
                     {tag}
-                  </span>
+                  </motion.span>
                 ))}
               </div>
             )}
 
-            <div className="border-t border-b border-gray-200 dark:border-gray-700 py-4">
-              <h3 className="font-semibold text-lg mb-2">Product Specifications</h3>
+            <div className="border-t border-gray-200 dark:border-gray-700 py-6">
+              <h3 className="font-semibold text-xl mb-4 text-gray-900 dark:text-white">Specifications</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <span className="font-medium text-gray-900 dark:text-white">Weight:</span>{' '}
-                  {product.weight ? `${product.weight} oz` : 'N/A'}
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {product.weight ? `${product.weight} ` : 'N/A'}
+                  </span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-900 dark:text-white">Dimensions:</span>{' '}
-                  {product.dimensions 
-                    ? `${product.dimensions.width} x ${product.dimensions.height} x ${product.dimensions.depth} in` 
-                    : 'N/A'}
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {product.dimensions 
+                      ? `${product.dimensions.width} x ${product.dimensions.height} x ${product.dimensions.depth} in` 
+                      : 'N/A'}
+                  </span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-900 dark:text-white">Minimum Order:</span>{' '}
-                  {product.minimumOrderQuantity || '1'}
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {product.minimumOrderQuantity || '1'}
+                  </span>
                 </div>
               </div>
             </div>
 
             {product.reviews && product.reviews.length > 0 && (
-              <div className="mt-4">
-                <h3 className="font-semibold text-lg mb-2">Customer Reviews</h3>
-                <div className="space-y-4">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h3 className="font-semibold text-xl mb-4 text-gray-900 dark:text-white">Customer Reviews</h3>
+                <div className="space-y-6">
                   {product.reviews.map((review, index) => {
-                    // Parse date only once and format consistently
                     const reviewDate = new Date(review.date);
-                    const formattedDate = `${reviewDate.getFullYear()}-${String(reviewDate.getMonth() + 1).padStart(2, '0')}-${String(reviewDate.getDate()).padStart(2, '0')}`;
+                    const formattedDate = reviewDate.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    });
                     
                     return (
-                      <div key={index} className="border-b border-gray-200 dark:border-gray-700 pb-4">
+                      <motion.div 
+                        key={index} 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="border-b border-gray-100 dark:border-gray-700 pb-6 last:border-0"
+                      >
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="font-medium">{review.reviewerName}</p>
+                            <p className="font-medium text-gray-900 dark:text-white">{review.reviewerName}</p>
                             <div className="flex items-center gap-1 mt-1">
                               {[...Array(5)].map((_, i) => (
                                 <Star
@@ -276,7 +331,7 @@ export default function ProductDetailsPage() {
                                   className={`h-4 w-4 ${
                                     i < review.rating
                                       ? 'text-yellow-400 fill-current'
-                                      : 'text-gray-300'
+                                      : 'text-gray-300 dark:text-gray-600'
                                   }`}
                                 />
                               ))}
@@ -286,21 +341,15 @@ export default function ProductDetailsPage() {
                             {formattedDate}
                           </span>
                         </div>
-                        <p className="mt-2 text-gray-600 dark:text-gray-300">{review.comment}</p>
-                      </div>
+                        <p className="mt-3 text-gray-600 dark:text-gray-300 leading-relaxed">
+                          {review.comment}
+                        </p>
+                      </motion.div>
                     );
                   })}
                 </div>
               </div>
             )}
-
-            <button
-              className="mt-4 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium"
-              disabled={product.stock === 0}
-              aria-disabled={product.stock === 0}
-            >
-              {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
-            </button>
           </div>
         </div>
       </motion.div>
