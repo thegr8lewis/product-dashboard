@@ -1,103 +1,176 @@
-import Image from "next/image";
+// src/app/page.tsx
+'use client';
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+import { useState, useMemo, useEffect } from 'react';
+import { Layout } from '@/components/layout/Layout';
+import { ProductGrid } from '@/components/products/ProductGrid';
+import { SearchBar } from '@/components/products/SearchBar';
+import { CategoryFilter } from '@/components/products/CategoryFilter';
+import { useProducts, useCategories } from '@/hooks/useProducts';
+import { Product } from '@/types/index';
+import { Spinner } from '@/components/ui/Spinner';
+import { ErrorMessage } from '@/components/ui/ErrorMessage';
+
+export default function HomePage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  // Fetch data
+  const { data: productsData, isLoading: productsLoading, error: productsError } = useProducts();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+
+  // Debug: Log fetched products to identify invalid data
+  useEffect(() => {
+    if (productsData?.products) {
+      console.log(
+        'Fetched products:',
+        productsData.products.map((p) => ({
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          brand: p.brand,
+          category: p.category,
+        }))
+      );
+    }
+  }, [productsData]);
+
+  // Filter products based on search and category
+  const filteredProducts = useMemo(() => {
+    if (!productsData?.products) return [];
+
+    let filtered = productsData.products;
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((product) => {
+        // Safely check if fields exist and are strings
+        const title = typeof product.title === 'string' ? product.title.toLowerCase() : '';
+        const description =
+          typeof product.description === 'string' ? product.description.toLowerCase() : '';
+        const brand = typeof product.brand === 'string' ? product.brand.toLowerCase() : '';
+        const category = typeof product.category === 'string' ? product.category.toLowerCase() : '';
+
+        return (
+          title.includes(query) ||
+          description.includes(query) ||
+          brand.includes(query) ||
+          category.includes(query)
+        );
+      });
+    }
+
+    // Filter by category
+    if (selectedCategory) {
+      filtered = filtered.filter(
+        (product) =>
+          typeof product.category === 'string' && product.category === selectedCategory
+      );
+    }
+
+    return filtered;
+  }, [productsData?.products, searchQuery, selectedCategory]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+  };
+
+  // Handle error state
+  if (productsError) {
+    return (
+      <Layout>
+        <ErrorMessage
+          message={typeof productsError === 'object' && 'message' in productsError
+            ? (productsError as { message: string }).message
+            : 'Failed to load products'}
+          onRetry={() => window.location.reload()}
         />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+      </Layout>
+    );
+  }
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Handle categories loading state (minimal UI while categories load)
+  if (categoriesLoading) {
+    return (
+      <Layout>
+        <div className="space-y-8">
+          {/* Header Section */}
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Discover Amazing Products
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Browse through our extensive collection of products. Use the search and filters below
+              to find exactly what you're looking for.
+            </p>
+          </div>
+          {/* Placeholder for search and filter */}
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            </div>
+            <div className="w-full sm:w-64">
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            </div>
+          </div>
+          <div className="flex justify-center items-center h-64">
+            <Spinner size="lg" />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className="space-y-20">
+        {/* Header Section */}
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Discover Amazing Products
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Browse through our extensive collection of products. Use the search and filters below
+            to find exactly what you're looking for.
+          </p>
+        </div>
+
+        {/* Search and Filter Section */}
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
+          <div className="flex-1 w-full">
+            <SearchBar
+              onSearch={handleSearch}
+              placeholder="Search by product name, brand, or description..."
+            />
+          </div>
+          <div className="w-full sm:w-64">
+            <CategoryFilter
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onCategoryChange={handleCategoryChange}
+              isLoading={categoriesLoading}
+            />
+          </div>
+        </div>
+
+
+        {/* Products Grid */}
+        <ProductGrid
+          products={filteredProducts}
+          isLoading={productsLoading}
+          error={
+            typeof productsError === 'object' && productsError && 'message' in productsError
+              ? (productsError as { message: string }).message
+              : undefined
+          }
+          onRetry={() => window.location.reload()}
+        />
+      </div>
+    </Layout>
   );
 }
