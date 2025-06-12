@@ -125,23 +125,6 @@ product-dashboard/
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions!
-
-```bash
-# Fork the repo and create your feature branch
-git checkout -b feature/amazing-feature
-
-# Commit your changes
-git commit -m 'Add some amazing feature'
-
-# Push to your fork
-git push origin feature/amazing-feature
-
-# Open a pull request
-```
-
 ---
 
 
