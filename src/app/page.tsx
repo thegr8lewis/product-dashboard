@@ -253,7 +253,7 @@
 // src/app/page.tsx
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { SearchBar } from '@/components/products/SearchBar';

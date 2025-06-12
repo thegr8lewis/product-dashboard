@@ -7,33 +7,50 @@
 //   onSearch: (query: string) => void;
 //   placeholder?: string;
 //   className?: string;
+//   value?: string; // Add external value prop
+//   onClear?: () => void; // Add external clear handler
 // }
 
 // export function SearchBar({ 
 //   onSearch, 
 //   placeholder = "Search products...", 
-//   className = "" 
+//   className = "",
+//   value,
+//   onClear
 // }: SearchBarProps) {
-//   const [query, setQuery] = useState('');
-//   const [debouncedQuery, setDebouncedQuery] = useState('');
+//   const [query, setQuery] = useState(value || '');
+//   const [debouncedQuery, setDebouncedQuery] = useState(value || '');
+
+//   // Sync internal state with external value prop
+//   useEffect(() => {
+//     if (value !== undefined) {
+//       setQuery(value);
+//       setDebouncedQuery(value);
+//     }
+//   }, [value]);
 
 //   // Debounce search query
 //   useEffect(() => {
 //     const timer = setTimeout(() => {
-//       setDebouncedQuery(query);
+//       if (debouncedQuery !== query) {
+//         setDebouncedQuery(query);
+//         onSearch(query);
+//       }
 //     }, 300);
 
 //     return () => clearTimeout(timer);
-//   }, [query]);
-
-//   // Trigger search when debounced query changes
-//   useEffect(() => {
-//     onSearch(debouncedQuery);
-//   }, [debouncedQuery, onSearch]);
+//   }, [query, onSearch]);
 
 //   const handleClear = () => {
 //     setQuery('');
 //     setDebouncedQuery('');
+//     if (onClear) {
+//       onClear();
+//     }
+//   };
+
+//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     setQuery(e.target.value);
 //   };
 
 //   return (
@@ -46,7 +63,7 @@
 //         <input
 //           type="text"
 //           value={query}
-//           onChange={(e) => setQuery(e.target.value)}
+//           onChange={handleInputChange}
 //           placeholder={placeholder}
 //           className="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
 //                      focus:ring-2 focus:ring-blue-500 focus:border-transparent 
@@ -77,10 +94,11 @@
 // }
 
 
+
 // src/components/products/SearchBar.tsx
 
 import { Search, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -99,6 +117,12 @@ export function SearchBar({
 }: SearchBarProps) {
   const [query, setQuery] = useState(value || '');
   const [debouncedQuery, setDebouncedQuery] = useState(value || '');
+  const onSearchRef = useRef(onSearch);
+
+  // Update the ref when onSearch changes
+  useEffect(() => {
+    onSearchRef.current = onSearch;
+  }, [onSearch]);
 
   // Sync internal state with external value prop
   useEffect(() => {
@@ -111,14 +135,16 @@ export function SearchBar({
   // Debounce search query
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (debouncedQuery !== query) {
-        setDebouncedQuery(query);
-        onSearch(query);
-      }
+      setDebouncedQuery(query);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [query, onSearch]);
+  }, [query]);
+
+  // Trigger search when debounced query changes
+  useEffect(() => {
+    onSearchRef.current(debouncedQuery);
+  }, [debouncedQuery]);
 
   const handleClear = () => {
     setQuery('');
