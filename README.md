@@ -65,36 +65,36 @@ A modern product dashboard built with **Next.js (App Router)** that displays pro
 product-dashboard/
 ├── src/
 │   ├── app/
-│   │   ├── product/[id]/         # Dynamic product detail pages
+│   │   ├── product/[id]/               # Dynamic product detail pages
 │   │   │   └── page.tsx
 │   │   ├── favicon.ico
-│   │   ├── globals.css           # Global styles (Tailwind CSS)
-│   │   ├── layout.tsx            # Root layout
-│   │   ├── page.tsx              # Home page
-│   │   └── providers.tsx         # Context providers (React Query, etc.)
-│   ├── components/
+│   │   ├── globals.css                 # Global styles (Tailwind CSS)
+│   │   ├── layout.tsx                  # Root layout
+│   │   ├── page.tsx                    # Home page
+│   │   └── providers.tsx               # Context providers (React Query, etc.)
+│   ├── components/                     # Reusable UI components
 │   │   ├── layout/
-│   │   │   ├── Footer.tsx
-│   │   │   ├── Header.tsx
-│   │   │   └── Layout.tsx
-│   │   ├── products/
-│   │   │   ├── CategoryFilter.tsx
-│   │   │   ├── ProductCard.tsx
-│   │   │   ├── ProductGrid.tsx
-│   │   │   └── SearchBar.tsx
+│   │   │   ├── Footer.tsx              # Application footer
+│   │   │   ├── Header.tsx              # Navigation header
+│   │   │   └── Layout.tsx              # Main layout wrapper
+│   │   ├── products/                   
+│   │   │   ├── CategoryFilter.tsx      # Category filtering dropdown
+│   │   │   ├── ProductCard.tsx         # Individual product card
+│   │   │   ├── ProductGrid.tsx         # Products grid container
+│   │   │   └── SearchBar.tsx           # Search input component
 │   │   └── ui/
-│   │       ├── ErrorBoundary.tsx
-│   │       ├── ErrorMessage.tsx
-│   │       └── Spinner.tsx
+│   │       ├── ErrorBoundary.tsx        # Error boundary wrapper
+│   │       ├── ErrorMessage.tsx         # Error display component
+│   │       └── Spinner.tsx              # Loading spinner
 │   ├── hooks/
-│   │   └── useProducts.ts
+│   │   └── useProducts.ts               # Custom hook for product data fetching
 │   ├── lib/
-│   │   └── splits/
+│   │   └── api.ts/                      # Utility functions and configurations
 │   ├── styles/
-│   │   └── tailwind.config.js
+│   │   └── tailwind.config.js           # Tailwind CSS configuration  
 │   └── types/
-│       └── index.ts
-├── public/
+│       └── index.ts                     # TypeScript type definitions
+├── public/                              # Static assets
 ├── .gitignore
 ├── .eslintrc.json
 ├── next.config.js
@@ -144,55 +144,6 @@ git push origin feature/amazing-feature
 
 ---
 
-## 🚀 Future Enhancements
-
-* [ ] Product comparison feature
-* [ ] Shopping cart functionality
-* [ ] User authentication
-* [ ] Product reviews and rating system
-* [ ] Advanced filters (e.g., price range, rating)
-* [ ] Pagination for large datasets
-* [ ] Wishlist functionality
-
----
-
-## 📄 License
-
-MIT License. Feel free to use and modify this project.
-
----
-
-Let me know if you'd like this exported as a `.md` file.
-
-
-## Key Components
-
-### ProductCard
-Displays individual product information including:
-- Product image with fallback
-- Title and description
-- Price and rating
-- Category badge
-- Click-to-navigate functionality
-
-### SearchBar
-Real-time search functionality:
-- Debounced input for performance
-- Search by product title
-- Clear search option
-
-### CategoryFilter
-Dropdown filter component:
-- Dynamic category list from API data
-- Filter products by selected category
-- Reset filter option
-
-### ProductGrid
-Container component managing:
-- Responsive grid layout
-- Loading states with skeleton UI
-- Empty states
-- Error boundaries
 
 ## Data Flow
 
