@@ -165,9 +165,6 @@ Follow these steps to get the project up and running locally:
 https://github.com/thegr8lewis/product-dashboard.git
 cd product-dashboard
 ```
-
-> Replace `your-username` with your actual GitHub username or organization.
-
 ---
 
 ### 2. **Install Dependencies**
