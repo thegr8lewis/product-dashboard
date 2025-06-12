@@ -1,36 +1,205 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛍️ Product Dashboard
 
-## Getting Started
+A modern product dashboard built with **Next.js (App Router)** that displays products from the [DummyJSON API](https://dummyjson.com/products). Features include real-time search, category filtering, responsive grid layout, and error handling.
 
-First, run the development server:
+---
+
+## 📦 Features
+
+* Fetch and display products from an external API
+* Real-time search with debounce
+* Filter products by category
+* Responsive product grid with skeleton loaders
+* Detailed product pages
+* Error boundary handling
+* Modular component structure
+
+---
+
+## 🔌 API Integration
+
+**Base URL:** `https://dummyjson.com/products`
+
+### Endpoints Used
+
+| Method | Endpoint               | Description                        |
+| ------ | ---------------------- | ---------------------------------- |
+| GET    | `/products`            | Fetch all products with pagination |
+| GET    | `/products/:id`        | Fetch individual product details   |
+| GET    | `/products/categories` | Fetch available product categories |
+
+---
+
+## 🧱 Component Overview
+
+### 🧩 `ProductCard`
+
+* Displays product image (with fallback)
+* Shows title, description, price, and rating
+* Category badge
+* Click-to-navigate to detail page
+
+### 🔍 `SearchBar`
+
+* Real-time product title search
+* Debounced input for performance
+* Clear search button
+
+### 🗂️ `CategoryFilter`
+
+* Dropdown populated with API categories
+* Filters product grid by category
+* Reset option to remove filter
+
+### 🧮 `ProductGrid`
+
+* Responsive grid layout
+* Handles loading and empty states
+* Wrapped in error boundary
+
+---
+
+## 📁 Project Structure
+
+```
+product-dashboard/
+├── src/
+│   ├── app/
+│   │   ├── product/[id]/               # Dynamic product detail pages
+│   │   │   └── page.tsx
+│   │   ├── favicon.ico
+│   │   ├── globals.css                 # Global styles (Tailwind CSS)
+│   │   ├── layout.tsx                  # Root layout
+│   │   ├── page.tsx                    # Home page
+│   │   └── providers.tsx               # Context providers (React Query, etc.)
+│   ├── components/                     # Reusable UI components
+│   │   ├── layout/
+│   │   │   ├── Footer.tsx              # Application footer
+│   │   │   ├── Header.tsx              # Navigation header
+│   │   │   └── Layout.tsx              # Main layout wrapper
+│   │   ├── products/                   
+│   │   │   ├── CategoryFilter.tsx      # Category filtering dropdown
+│   │   │   ├── ProductCard.tsx         # Individual product card
+│   │   │   ├── ProductGrid.tsx         # Products grid container
+│   │   │   └── SearchBar.tsx           # Search input component
+│   │   └── ui/
+│   │       ├── ErrorBoundary.tsx        # Error boundary wrapper
+│   │       ├── ErrorMessage.tsx         # Error display component
+│   │       └── Spinner.tsx              # Loading spinner
+│   ├── hooks/
+│   │   └── useProducts.ts               # Custom hook for product data fetching
+│   ├── lib/
+│   │   └── api.ts/                      # Utility functions and configurations
+│   ├── styles/
+│   │   └── tailwind.config.js           # Tailwind CSS configuration  
+│   └── types/
+│       └── index.ts                     # TypeScript type definitions
+├── public/                              # Static assets
+├── .gitignore
+├── .eslintrc.json
+├── next.config.js
+├── package.json
+├── postcss.config.js
+├── README.md
+└── tsconfig.json
+```
+
+---
+
+
+
+## Data Flow
+
+1. **Initial Load**: App fetches all products using React Query
+2. **Caching**: Data is cached and shared across components
+3. **Search/Filter**: Client-side operations on cached data
+4. **Navigation**: Product details fetched on-demand with caching
+5. **Error Handling**: Graceful fallbacks and retry mechanisms
+
+## UI/UX Features
+
+- **Loading States**: Skeleton loaders maintain layout during data fetching
+- **Error Boundaries**: Graceful error handling with retry options
+- **Responsive Design**: Seamless experience across all device sizes
+- **Accessibility**: Proper ARIA labels and keyboard navigation
+- **Performance**: Optimized images and lazy loading
+
+## Configuration
+
+### Tailwind CSS
+Custom configuration in `tailwind.config.js`:
+- Extended color palette
+- Custom breakpoints
+- Animation utilities
+
+### Next.js
+Configuration in `next.config.js`:
+- Image optimization settings
+- Build optimizations
+- Environment-specific settings
+
+## Performance Optimizations
+
+- **React Query Caching**: Intelligent data caching and background updates
+- **Image Optimization**: Next.js automatic image optimization
+- **Code Splitting**: Automatic code splitting with App Router
+- **Debounced Search**: Prevents excessive API calls during typing
+- **Lazy Loading**: Images and components loaded on demand
+
+## Development Notes
+
+- Components follow React best practices with proper prop typing
+- Custom hooks abstract API logic from UI components  
+- Error boundaries prevent application crashes
+- Consistent naming conventions throughout the codebase
+- Responsive design tested across multiple device sizes
+
+
+## 🛠️ Setup
+
+Follow these steps to get the project up and running locally:
+
+### 1. **Clone the Repository**
+
+```bash
+https://github.com/thegr8lewis/product-dashboard.git
+cd product-dashboard
+```
+---
+
+### 2. **Install Dependencies**
+
+Make sure you have **Node.js** (v18 or higher) and **npm** installed. Then run:
+
+```bash
+npm install
+```
+
+---
+
+### 3. **Run the Development Server**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open your browser and visit [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. **Build for Production**
 
-## Learn More
+To generate an optimized production build:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To preview the production build locally:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run start
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
