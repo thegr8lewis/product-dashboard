@@ -424,14 +424,14 @@ export default function ProductDetailsPage() {
                 <div>
                   <span className="font-medium text-gray-900 dark:text-white">Weight:</span>{' '}
                   <span className="text-gray-600 dark:text-gray-300">
-                    {product.weight ? `${product.weight} oz` : 'N/A'}
+                    {product.weight ? `${product.weight} ` : 'N/A'}
                   </span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-900 dark:text-white">Dimensions:</span>{' '}
                   <span className="text-gray-600 dark:text-gray-300">
                     {product.dimensions 
-                      ? `${product.dimensions.width} x ${product.dimensions.height} x ${product.dimensions.depth} in` 
+                      ? `${product.dimensions.width} x ${product.dimensions.height} x ${product.dimensions.depth} ` 
                       : 'N/A'}
                   </span>
                 </div>
