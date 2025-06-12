@@ -106,26 +106,6 @@ product-dashboard/
 
 ---
 
-## 🛠️ Getting Started
-
-1. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-2. **Run the development server**
-
-   ```bash
-   npm run dev
-   ```
-
-3. **Open in browser**
-   Visit `http://localhost:3000`
-
----
-
----
 
 
 ## Data Flow
@@ -174,4 +154,55 @@ Configuration in `next.config.js`:
 - Consistent naming conventions throughout the codebase
 - Responsive design tested across multiple device sizes
 
+
+## 🛠️ Setup
+
+Follow these steps to get the project up and running locally:
+
+### 1. **Clone the Repository**
+
+```bash
+https://github.com/thegr8lewis/product-dashboard.git
+cd product-dashboard
+```
+
+> Replace `your-username` with your actual GitHub username or organization.
+
+---
+
+### 2. **Install Dependencies**
+
+Make sure you have **Node.js** (v18 or higher) and **npm** installed. Then run:
+
+```bash
+npm install
+```
+
+---
+
+### 3. **Run the Development Server**
+
+```bash
+npm run dev
+```
+
+Open your browser and visit [http://localhost:3000](http://localhost:3000)
+
+---
+
+### 4. **Build for Production**
+
+To generate an optimized production build:
+
+```bash
+npm run build
+```
+
+To preview the production build locally:
+
+```bash
+npm run start
+```
+
+---
 
