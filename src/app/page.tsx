@@ -9,10 +9,14 @@
 // import { useProducts } from '@/hooks/useProducts';
 // import { Spinner } from '@/components/ui/Spinner';
 // import { ErrorMessage } from '@/components/ui/ErrorMessage';
+// import { Search, Filter } from 'lucide-react';
 
 // export default function HomePage() {
 //   const [searchQuery, setSearchQuery] = useState('');
 //   const [selectedCategory, setSelectedCategory] = useState('');
+//   const [isSearchOpen, setIsSearchOpen] = useState(false);
+//   const [isFilterOpen, setIsFilterOpen] = useState(false);
+//   const [isFiltering, setIsFiltering] = useState(false);
 
 //   // Fetch products
 //   const { data: productsData, isLoading: productsLoading, error: productsError } = useProducts();
@@ -32,12 +36,10 @@
 
 //     let filtered = productsData.products;
 
-//     // Filter by category
 //     if (selectedCategory) {
 //       filtered = filtered.filter((product) => product.category === selectedCategory);
 //     }
 
-//     // Filter by search query
 //     if (searchQuery.trim()) {
 //       const query = searchQuery.toLowerCase();
 //       filtered = filtered.filter((product) => {
@@ -58,12 +60,46 @@
 //     return filtered;
 //   }, [productsData?.products, searchQuery, selectedCategory]);
 
+//   // Handle filtering animation separately
+//   useEffect(() => {
+//     if (searchQuery || selectedCategory) {
+//       setIsFiltering(true);
+//       const timer = setTimeout(() => {
+//         setIsFiltering(false);
+//       }, 300);
+
+//       return () => clearTimeout(timer);
+//     } else {
+//       setIsFiltering(false);
+//     }
+//   }, [searchQuery, selectedCategory]);
+
+//   // Debug logging
+//   useEffect(() => {
+//     console.log('isSearchOpen changed:', isSearchOpen);
+//   }, [isSearchOpen]);
+
 //   const handleSearch = (query: string) => {
+//     console.log('handleSearch called with:', query);
 //     setSearchQuery(query);
+//     // Don't close the search bar immediately - let user continue searching
+//     // setIsSearchOpen(false);
 //   };
 
 //   const handleCategoryChange = (category: string) => {
 //     setSelectedCategory(category);
+//     setIsFilterOpen(false);
+//   };
+
+//   const toggleSearch = () => {
+//     console.log('Search toggle clicked, current state:', isSearchOpen); // Debug log
+//     setIsSearchOpen((prev) => !prev);
+//     if (isFilterOpen) setIsFilterOpen(false); // Close filter if open
+//   };
+
+//   const toggleFilter = () => {
+//     setIsFilterOpen((prev) => !prev);
+//     if (isSearchOpen) setIsSearchOpen(false); // Close search if open
 //   };
 
 //   // Handle error state
@@ -86,14 +122,12 @@
 //   if (productsLoading) {
 //     return (
 //       <Layout>
-//         <div className="space-y-8 ">
-//           {/* Header Section */}
+//         <div className="space-y-8">
 //           <div className="text-center">
 //             <h2 className="text-3xl font-bold text-foreground mb-4 pt-20">
 //               Discover Amazing Products
 //             </h2>
 //           </div>
-//           {/* Placeholder for search and filter */}
 //           <div className="flex flex-col sm:flex-row gap-4 items-center">
 //             <div className="flex-1 w-full">
 //               <div className="h-10 bg-muted rounded animate-pulse" />
@@ -113,52 +147,113 @@
 //   return (
 //     <Layout>
 //       <div className="space-y-8">
-//         {/* Header Section */}
 //         <div className="text-center">
 //           <h2 className="text-3xl font-bold text-foreground mb-4 pt-20">
 //             Discover Amazing Products
 //           </h2>
-
 //         </div>
 
-//         {/* Search and Filter Section */}
-//         <div className="flex flex-col sm:flex-row gap-4 items-center">
-//           <div className="flex-1 w-full">
-//             <SearchBar
-//               onSearch={handleSearch}
-//               placeholder="Search by product name..."
-//             />
+//         <div className="space-y-4">
+//           {/* Mobile View (hidden on md and above) */}
+//           <div className="flex w-full md:hidden gap-4">
+//             <button
+//               className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-muted rounded hover:bg-muted/80 transition-colors"
+//               onClick={toggleSearch}
+//               aria-label="Toggle search bar"
+//               type="button"
+//             >
+//               <Search size={20} />
+//               <span>Search</span>
+//             </button>
+//             <button
+//               className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-muted rounded hover:bg-muted/80 transition-colors"
+//               onClick={toggleFilter}
+//               aria-label="Toggle category filter"
+//               type="button"
+//             >
+//               <Filter size={20} />
+//               <span>Category</span>
+//             </button>
 //           </div>
-//           <div className="w-full sm:w-48">
-//             <CategoryFilter
-//               categories={categories}
-//               selectedCategory={selectedCategory}
-//               onCategoryChange={handleCategoryChange}
-//               isLoading={productsLoading}
-//             />
+
+//           {/* Search Bar for Mobile - appears below buttons */}
+//           {isSearchOpen && (
+//             <div className="w-full md:hidden">
+//               <SearchBar
+//                 onSearch={handleSearch}
+//                 placeholder="Search by product name..."
+//               />
+//             </div>
+//           )}
+
+//           {/* Category Filter Dropdown for Mobile - appears below buttons */}
+//           {isFilterOpen && (
+//             <div className="w-full md:hidden">
+//               <CategoryFilter
+//                 categories={categories}
+//                 selectedCategory={selectedCategory}
+//                 onCategoryChange={handleCategoryChange}
+//                 isLoading={productsLoading}
+//               />
+//             </div>
+//           )}
+
+//           {/* Desktop View (hidden on mobile) */}
+//           <div className="hidden md:flex gap-4 items-center">
+//             <div className="flex-1">
+//               <SearchBar
+//                 onSearch={handleSearch}
+//                 placeholder="Search by product name..."
+//               />
+//             </div>
+//             <div className="w-48">
+//               <CategoryFilter
+//                 categories={categories}
+//                 selectedCategory={selectedCategory}
+//                 onCategoryChange={handleCategoryChange}
+//                 isLoading={productsLoading}
+//               />
+//             </div>
 //           </div>
 //         </div>
 
-//         {/* Products Grid */}
-//         <ProductGrid
-//           products={filteredProducts}
-//           isLoading={productsLoading}
-//           error={
-//             typeof productsError === 'object' && productsError && 'message' in productsError
-//               ? (productsError as { message: string }).message
-//               : undefined
-//           }
-//           onRetry={() => window.location.reload()}
-//         />
+//         {/* Products Grid with Skeleton during Filtering */}
+//         {isFiltering ? (
+//           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+//             {[...Array(6)].map((_, index) => (
+//               <div key={index} className="bg-muted rounded-lg animate-pulse">
+//                 <div className="h-48 w-full bg-gray-200" />
+//                 <div className="p-4 space-y-2">
+//                   <div className="h-4 bg-gray-200 rounded w-3/4" />
+//                   <div className="h-4 bg-gray-200 rounded w-1/2" />
+//                   <div className="h-4 bg-gray-200 rounded w-1/4" />
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         ) : (
+//           <ProductGrid
+//             products={filteredProducts}
+//             isLoading={productsLoading}
+//             error={
+//               typeof productsError === 'object' && productsError && 'message' in productsError
+//                 ? (productsError as { message: string }).message
+//                 : undefined
+//             }
+//             onRetry={() => window.location.reload()}
+//           />
+//         )}
 //       </div>
 //     </Layout>
 //   );
 // }
 
+
+
 // src/app/page.tsx
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { ProductGrid } from '@/components/products/ProductGrid';
 import { SearchBar } from '@/components/products/SearchBar';
@@ -239,8 +334,6 @@ export default function HomePage() {
   const handleSearch = (query: string) => {
     console.log('handleSearch called with:', query);
     setSearchQuery(query);
-    // Don't close the search bar immediately - let user continue searching
-    // setIsSearchOpen(false);
   };
 
   const handleCategoryChange = (category: string) => {
@@ -249,9 +342,20 @@ export default function HomePage() {
   };
 
   const toggleSearch = () => {
-    console.log('Search toggle clicked, current state:', isSearchOpen); // Debug log
-    setIsSearchOpen((prev) => !prev);
+    console.log('Search toggle clicked, current state:', isSearchOpen);
+    const newSearchState = !isSearchOpen;
+    setIsSearchOpen(newSearchState);
+    
+    // Clear search query when closing search on mobile
+    if (!newSearchState) {
+      setSearchQuery('');
+    }
+    
     if (isFilterOpen) setIsFilterOpen(false); // Close filter if open
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
   };
 
   const toggleFilter = () => {
@@ -339,6 +443,8 @@ export default function HomePage() {
               <SearchBar
                 onSearch={handleSearch}
                 placeholder="Search by product name..."
+                value={searchQuery}
+                onClear={handleClearSearch}
               />
             </div>
           )}
@@ -361,6 +467,8 @@ export default function HomePage() {
               <SearchBar
                 onSearch={handleSearch}
                 placeholder="Search by product name..."
+                value={searchQuery}
+                onClear={handleClearSearch}
               />
             </div>
             <div className="w-48">
