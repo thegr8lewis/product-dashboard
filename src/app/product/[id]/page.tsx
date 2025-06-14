@@ -11,7 +11,7 @@ import { Product } from '@/types';
 import { Spinner } from '@/components/ui/Spinner';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { Layout } from '@/components/layout/Layout';
-import { Star, ArrowLeft, ChevronLeft, ChevronRight, Info, Shield, Truck, Package, RotateCw, Tag, Share2, Heart, ShoppingBag } from 'lucide-react';
+import { Star, ArrowLeft, ChevronLeft, ChevronRight, Info, Shield, Truck, Package, RotateCw, Tag, Share2, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Enhanced QR Code Modal Component

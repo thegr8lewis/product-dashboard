@@ -42,7 +42,7 @@
 // components/layout/Header.tsx
 'use client';
 
-import { Moon, Sun, ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export function Header() {
