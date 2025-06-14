@@ -157,13 +157,7 @@ export default function HomePage() {
   return (
     <Layout>
       <div className="space-y-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-4 pt-20">
-            Discover Amazing Products
-          </h2>
-        </div>
-
-        <div className="space-y-4">
+        <div className="space-y-4 pt-10">
           {/* Mobile View (hidden on md and above) */}
           <div className="flex w-full md:hidden gap-4">
             <button

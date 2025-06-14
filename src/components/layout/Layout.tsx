@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { motion } from 'framer-motion';
-import {Header}   from './Header';
 import { Footer } from './Footer';
 
 interface LayoutProps {
@@ -11,7 +10,7 @@ interface LayoutProps {
 function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <Header />
+  
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
         <ErrorBoundary fallbackMessage="An unexpected error occurred in the application">
