@@ -60,7 +60,7 @@ const QRCodeModal = ({ isOpen, onClose, qrCodeUrl }: { isOpen: boolean; onClose:
 };
 
 // Enhanced Share Dropdown Component
-const ShareDropdown = ({ isOpen, onClose, productUrl }: { isOpen: boolean; onClose: () => void; productUrl: string }) => {
+const ShareDropdown = ({ isOpen, productUrl }: { isOpen: boolean; onClose: () => void; productUrl: string }) => {
   if (!isOpen) return null;
 
   const shareLinks = [
