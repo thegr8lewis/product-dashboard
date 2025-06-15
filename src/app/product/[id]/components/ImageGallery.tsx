@@ -13,7 +13,8 @@ export const ImageGallery = ({
   setIsShareOpen,
   isFavorite,
   setIsFavorite,
-  productUrl
+  productUrl,
+  onQRCodeClick
 }: {
   images: string[];
   currentImageIndex: number;
@@ -23,6 +24,7 @@ export const ImageGallery = ({
   isFavorite: boolean;
   setIsFavorite: (favorite: boolean) => void;
   productUrl: string;
+  onQRCodeClick: () => void;
 }) => {
   const nextImage = () => {
     setCurrentImageIndex((currentImageIndex + 1) % images.length);
@@ -96,6 +98,7 @@ export const ImageGallery = ({
         </>
       )}
 
+      {/* Action Buttons */}
       <div className="absolute top-4 right-4 flex flex-col gap-2">
         <motion.button
           onClick={() => setIsFavorite(!isFavorite)}
@@ -112,6 +115,7 @@ export const ImageGallery = ({
         </motion.button>
       </div>
 
+      {/* Share and QR Code Buttons */}
       <div className="absolute bottom-4 left-4 flex gap-2">
         <motion.button
           onClick={() => setIsShareOpen(!isShareOpen)}
@@ -121,6 +125,22 @@ export const ImageGallery = ({
           aria-label="Share product"
         >
           <Share2 size={18} />
+        </motion.button>
+        <motion.button
+          onClick={onQRCodeClick}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-white p-2 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 focus:outline-none backdrop-blur-sm border border-gray-200 dark:border-gray-600"
+          aria-label="View QR code"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m-3 0h-2m-2 0H9m3 3h-2m-2 0H9m3 3h-2m-2 0H9m3-9v3m3 0h2m2 0h-2m-3 0h2m2 0h-2m-3 3v3m3 0h-2m-3 0h2m2 0h-2m-3 3v3m3 0h-2m-3 0h2m2 0h-2"
+            />
+          </svg>
         </motion.button>
       </div>
       <ShareDropdown isOpen={isShareOpen} productUrl={productUrl} />

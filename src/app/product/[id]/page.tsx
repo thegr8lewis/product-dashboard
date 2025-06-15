@@ -89,6 +89,7 @@ export default function ProductDetailsPage() {
             isFavorite={isFavorite}
             setIsFavorite={setIsFavorite}
             productUrl={productUrl}
+            onQRCodeClick={() => setIsQRCodeOpen(true)} // Add this prop
           />
 
           <div className="flex flex-col gap-4 sm:gap-6">
