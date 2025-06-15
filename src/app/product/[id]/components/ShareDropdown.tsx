@@ -3,6 +3,14 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
+interface ShareLink {
+  name: string;
+  color: string;
+  icon: React.ReactNode;
+  action?: () => void;
+  url?: string;
+}
+
 export const ShareDropdown = ({ 
   isOpen, 
   productUrl,
@@ -19,11 +27,8 @@ export const ShareDropdown = ({
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Check if native sharing is supported
     setCanShare(!!navigator.share);
-    // Check if mobile device
     setIsMobile(window.innerWidth < 640);
-    // Add resize listener
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -55,7 +60,7 @@ export const ShareDropdown = ({
     }
   };
 
-  const shareLinks = [
+  const shareLinks: ShareLink[] = [
     // Native device sharing (appears first if supported)
     ...(canShare ? [{
       name: 'Share',
@@ -169,7 +174,7 @@ export const ShareDropdown = ({
     },
   ];
 
-  const handleShare = (link: any) => {
+  const handleShare = (link: ShareLink) => {
     if (link.action) {
       link.action();
     } else if (link.url) {
