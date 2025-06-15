@@ -66,6 +66,7 @@ product-dashboard/
 ├── src/
 │   ├── app/
 │   │   ├── product/[id]/               # Dynamic product detail pages
+|   |   |---components              
 │   │   │   └── page.tsx
 │   │   ├── favicon.ico
 │   │   ├── globals.css                 # Global styles (Tailwind CSS)
